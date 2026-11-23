@@ -8,3 +8,4 @@ __pycache__/
 web/mock/
 .neon
 node_modules/
+*.pyc
