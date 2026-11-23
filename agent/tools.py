@@ -19,12 +19,21 @@ def _j(x) -> str:
     return json.dumps(x, default=str, ensure_ascii=False)
 
 
+# ponytail: mirrors agent/seed.py; leads added via admin with new industries are still found by `query`
+INDUSTRIES = "dental clinic, gym, real-estate agency, restaurant, e-commerce store, SaaS startup"
+CITIES = "Lahore, Karachi, Islamabad, Dubai, London"
+
+
 @tool
 def find_leads(query: str = "", industry: str = "", city: str = "", limit: int = 5) -> str:
-    """Search the prospect database by free-text query, industry and/or city. Returns up to `limit` (max 10) leads."""
+    """Search the prospect database. Returns up to `limit` (max 10) leads.
+    industry: exactly one of: dental clinic, gym, real-estate agency, restaurant, e-commerce store, SaaS startup.
+    city: one of Lahore, Karachi, Islamabad, Dubai, London.
+    query: ONE optional keyword matched against company/notes (e.g. "booking"); leave empty when industry/city suffice."""
     rows = db.find_leads(query or None, industry or None, city or None, max(1, min(int(limit), 10)))
     if not rows:
-        return "No leads found. Try a broader search."
+        return (f"No leads found. Use exact values. Industries: {INDUSTRIES}. Cities: {CITIES}. "
+                "Retry with industry and/or city only, without query.")
     return _j([{k: r.get(k) for k in LEAD_FIELDS} for r in rows])
 
 

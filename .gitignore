@@ -9,3 +9,4 @@ web/mock/
 .neon
 node_modules/
 *.pyc
+agent/__pycache__/

@@ -64,6 +64,7 @@
     }
 
     const url = (window.API_BASE || '') + path;
+    const method = (opts.method || 'GET').toUpperCase();
     const fetchOptions = {
       ...opts,
       headers: {
@@ -71,37 +72,28 @@
         ...(opts.headers || {})
       }
     };
+    // Only GETs are retried: a timed-out POST /chat may still be running on the server,
+    // and resending it would make the agent process the message twice.
+    const attempts = method === 'GET' ? 2 : 1;
 
-    // First attempt with 60s AbortController
-    let controller = new AbortController();
-    let timeoutId = setTimeout(() => controller.abort(), 60000);
-
-    try {
-      const response = await fetch(url, { ...fetchOptions, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
-      return await response.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-
-      // Cold start banner + auto-retry ONCE
-      showSystemBanner('Waking up the server… (free hosting sleeps when idle)');
+    for (let attempt = 1; ; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Render cold start can take ~50s
+      const slowId = setTimeout(() => showSystemBanner('Waking up the server… (free hosting sleeps when idle)'), 20000);
       try {
-        controller = new AbortController();
-        timeoutId = setTimeout(() => controller.abort(), 60000);
-        const retryRes = await fetch(url, { ...fetchOptions, signal: controller.signal });
-        clearTimeout(timeoutId);
-        hideSystemBanner();
-        if (!retryRes.ok) {
-          throw new Error(`API error after retry: ${retryRes.status} ${retryRes.statusText}`);
+        const response = await fetch(url, { ...fetchOptions, signal: controller.signal });
+        if (!response.ok) {
+          const httpErr = new Error(`API error: ${response.status} ${response.statusText}`);
+          httpErr.status = response.status;
+          throw httpErr;
         }
-        return await retryRes.json();
-      } catch (retryErr) {
+        return await response.json();
+      } catch (err) {
+        if (err.status || attempt >= attempts) throw err; // never retry HTTP errors
+      } finally {
         clearTimeout(timeoutId);
+        clearTimeout(slowId);
         hideSystemBanner();
-        throw retryErr;
       }
     }
   }
@@ -809,7 +801,7 @@
       if (deals.length === 0) {
         const emptyLabel = document.createElement('div');
         emptyLabel.style.color = 'var(--text-muted)';
-        emptyLabel.style.fontSize = '10px';
+        emptyLabel.style.fontSize = '12px';
         emptyLabel.style.textAlign = 'center';
         emptyLabel.style.padding = '8px 0';
         emptyLabel.textContent = 'Empty';
@@ -1087,10 +1079,14 @@
     if (window.USE_MOCK) {
       statusIndicator.classList.add('mock');
       statusText.textContent = 'Mock Mode';
-    } else {
-      statusIndicator.classList.remove('mock');
-      statusText.textContent = 'API Ready';
+      return;
     }
+    statusIndicator.classList.remove('mock');
+    statusText.textContent = 'Checking API…';
+    fetch((window.API_BASE || '') + '/health')
+      .then(r => r.text())
+      .then(t => { statusText.textContent = t.trim() === 'ok' ? 'API Ready' : 'API Error'; })
+      .catch(() => { statusText.textContent = 'API Offline'; });
   }
 
   // Initialize

@@ -60,6 +60,7 @@
     }
 
     const url = (window.API_BASE || '') + path;
+    const method = (opts.method || 'GET').toUpperCase();
     const fetchOptions = {
       ...opts,
       headers: {
@@ -68,52 +69,33 @@
         ...(opts.headers || {})
       }
     };
+    // Only GETs are retried: resending a timed-out POST /admin/leads could insert the lead twice.
+    const attempts = method === 'GET' ? 2 : 1;
 
-    let controller = new AbortController();
-    let timeoutId = setTimeout(() => controller.abort(), 60000);
-
-    try {
-      const response = await fetch(url, { ...fetchOptions, signal: controller.signal });
-      clearTimeout(timeoutId);
-
-      if (response.status === 401) {
-        handleUnauthorizedToken('Invalid or expired admin token');
-        throw new Error('Unauthorized: Invalid or expired admin token');
-      }
-
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status} ${response.statusText}`);
-      }
-
-      return await response.json();
-    } catch (err) {
-      clearTimeout(timeoutId);
-      if (err.message && err.message.includes('Unauthorized')) {
-        throw err;
-      }
-
-      // Cold-start auto-retry ONCE
-      showSystemBanner('Waking up the server… (free hosting sleeps when idle)');
+    for (let attempt = 1; ; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // Render cold start can take ~50s
+      const slowId = setTimeout(() => showSystemBanner('Waking up the server… (free hosting sleeps when idle)'), 20000);
       try {
-        controller = new AbortController();
-        timeoutId = setTimeout(() => controller.abort(), 60000);
-        const retryRes = await fetch(url, { ...fetchOptions, signal: controller.signal });
-        clearTimeout(timeoutId);
-        hideSystemBanner();
-
-        if (retryRes.status === 401) {
+        const response = await fetch(url, { ...fetchOptions, signal: controller.signal });
+        if (response.status === 401) {
           handleUnauthorizedToken('Invalid or expired admin token');
-          throw new Error('Unauthorized');
+          const authErr = new Error('Unauthorized: Invalid or expired admin token');
+          authErr.status = 401;
+          throw authErr;
         }
-
-        if (!retryRes.ok) {
-          throw new Error(`API error after retry: ${retryRes.status}`);
+        if (!response.ok) {
+          const httpErr = new Error(`API error: ${response.status} ${response.statusText}`);
+          httpErr.status = response.status;
+          throw httpErr;
         }
-        return await retryRes.json();
-      } catch (retryErr) {
+        return await response.json();
+      } catch (err) {
+        if (err.status || attempt >= attempts) throw err; // never retry HTTP errors
+      } finally {
         clearTimeout(timeoutId);
+        clearTimeout(slowId);
         hideSystemBanner();
-        throw retryErr;
       }
     }
   }

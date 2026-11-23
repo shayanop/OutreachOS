@@ -13,7 +13,7 @@
   --border-strong: #D1CEC5;
   --text-primary: #111110;
   --text-secondary: #57554E;
-  --text-muted: #8A877E;
+  --text-muted: #67645C;
   --accent: #B45309;
   --accent-hover: #92400E;
   --accent-soft: rgba(180, 83, 9, 0.08);
@@ -68,7 +68,7 @@
     --border-strong: #36363D;
     --text-primary: #F4F4F5;
     --text-secondary: #A1A1AA;
-    --text-muted: #71717A;
+    --text-muted: #8F8F98;
     --accent: #D97706;
     --accent-hover: #F59E0B;
     --accent-soft: rgba(217, 119, 6, 0.12);
@@ -104,7 +104,7 @@
   --border-strong: #36363D;
   --text-primary: #F4F4F5;
   --text-secondary: #A1A1AA;
-  --text-muted: #71717A;
+  --text-muted: #8F8F98;
   --accent: #D97706;
   --accent-hover: #F59E0B;
   --accent-soft: rgba(217, 119, 6, 0.12);
@@ -125,7 +125,7 @@
   --border-strong: #D1CEC5;
   --text-primary: #111110;
   --text-secondary: #57554E;
-  --text-muted: #8A877E;
+  --text-muted: #67645C;
   --accent: #B45309;
   --accent-hover: #92400E;
   --accent-soft: rgba(180, 83, 9, 0.08);
@@ -257,7 +257,7 @@ input, textarea, select {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   font-family: var(--font-mono);
   color: var(--text-muted);
@@ -310,7 +310,7 @@ input, textarea, select {
 }
 
 .btn-header-signout {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   text-decoration: underline;
   margin-left: 4px;
@@ -424,7 +424,7 @@ input, textarea, select {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   padding: 2px 7px;
   border-radius: var(--radius-md);
@@ -452,7 +452,7 @@ input, textarea, select {
 }
 
 .badge-stage {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.2px;
   text-transform: uppercase;
@@ -471,7 +471,7 @@ input, textarea, select {
   align-items: center;
   gap: 4px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
@@ -569,7 +569,7 @@ input, textarea, select {
 
 .pillar-index {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--accent);
   background: var(--accent-soft);
@@ -640,7 +640,7 @@ input, textarea, select {
   position: absolute;
   top: -10px;
   right: var(--space-4);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.4px;
   text-transform: uppercase;
@@ -802,7 +802,7 @@ input, textarea, select {
   align-items: center;
   gap: var(--space-2);
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .divider-with-text::before,
@@ -917,7 +917,7 @@ input, textarea, select {
 }
 
 .thread-item-date {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
   font-family: var(--font-mono);
 }
@@ -1020,7 +1020,7 @@ input, textarea, select {
 
 .token-meta {
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-muted);
 }
 
@@ -1077,7 +1077,7 @@ input, textarea, select {
 }
 
 .prompt-chip {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
   background-color: var(--bg-subtle);
@@ -1195,7 +1195,7 @@ input, textarea, select {
 }
 
 .kanban-col-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -1203,7 +1203,7 @@ input, textarea, select {
 }
 
 .kanban-col-count {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   font-family: var(--font-mono);
   background: var(--bg-surface);
@@ -1230,7 +1230,7 @@ input, textarea, select {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .kanban-card-company {
@@ -1241,12 +1241,12 @@ input, textarea, select {
 
 .kanban-card-contact {
   color: var(--text-secondary);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .kanban-card-note {
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.3;
   margin-top: 2px;
   border-top: 1px dashed var(--border);
@@ -1333,7 +1333,7 @@ input, textarea, select {
   align-items: center;
   gap: var(--space-3);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 12px;
   color: var(--text-muted);
   border-top: 1px solid var(--border);
   padding-top: var(--space-2);
@@ -1393,7 +1393,7 @@ input, textarea, select {
 }
 
 .stat-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -1410,7 +1410,7 @@ input, textarea, select {
 }
 
 .stat-subtext {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 
@@ -1462,7 +1462,7 @@ input, textarea, select {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--text-secondary);
 }
@@ -1544,7 +1544,7 @@ input, textarea, select {
   border-bottom: 1px solid var(--border);
   padding: 8px 12px;
   font-weight: 600;
-  font-size: 11px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--text-muted);

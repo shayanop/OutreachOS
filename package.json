@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "dev": "python -m http.server 5500 --bind 127.0.0.1 --directory web",
+    "api": "cd agent && python -m uvicorn app:app --host 127.0.0.1 --port 8000"
+  },
   "dependencies": {
     "@neon/config": "^1.14.6",
     "@neon/env": "^2.1.9"

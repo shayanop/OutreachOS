@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "pulsing-dot",
+        "value": "*",
+        "files": [
+          "web/admin.html"
+        ],
+        "createdAt": "2026-11-23T11:35:30.409Z",
+        "reason": "Claude: false positive - .status-dot (web/style.css) is a static 6px circle with no animation; the only pulse keyframe is the chat typing indicator in index.html"
+      }
+    ]
+  }
+}
