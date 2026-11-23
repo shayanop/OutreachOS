@@ -1,7 +1,8 @@
-fastapi
-uvicorn[standard]
-langgraph
-langgraph-checkpoint-postgres
-langchain-anthropic
-psycopg[binary,pool]
-python-dotenv
+fastapi==0.165.0
+uvicorn[standard]==0.54.0
+langgraph==1.2.24
+langgraph-checkpoint-postgres==3.2.1
+langchain-anthropic==1.7.12
+psycopg[binary,pool]==3.3.9
+psycopg-pool==3.3.3
+python-dotenv==1.2.4
