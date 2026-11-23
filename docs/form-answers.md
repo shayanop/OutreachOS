@@ -25,7 +25,7 @@ Flow: `START → guard → (agent | END)`, `agent → (tools | END)`, `tools →
 | `remember(fact)` | saves a long-term fact about the user |
 
 ## Memory
-- **Short-term (per conversation):** the LangGraph `PostgresSaver` checkpointer stores the full message history per thread in Neon Postgres. The checkpoint key is `"{user_id}:{thread_id}"`. The last 6 user turns are sent to the model.
+- **Short-term (per conversation):** the LangGraph `PostgresSaver` checkpointer stores the full message history per thread in Neon Postgres. The checkpoint key is `"{user_id}:{thread_id}"`. It is saved once at the end of each turn. The last 6 user turns are sent to the model.
 - **Long-term (per user, across conversations):** the `memories` table keyed by `user_id`. The agent calls `remember` when the user states a lasting fact (name, company, product, ideal customer, tone). All facts are injected into the system prompt on every turn in every thread. The user's pipeline and drafts are also stored per `user_id`.
 - Everything is in Neon Postgres, so nothing is lost on a restart.
 
@@ -41,6 +41,17 @@ Flow: `START → guard → (agent | END)`, `agent → (tools | END)`, `tools →
 - **Asks before risky actions:** `send_email` uses a two-step confirmation enforced in code (draft → pending_send in turn N → sent only in a later turn after the user says yes). It can never send in the same turn as the request.
 
 ## Demo data
-About 30 fictional B2B leads across 6 industries (dental clinics, gyms, real-estate agencies, restaurants, e-commerce stores, SaaS startups) and 5 cities (Lahore, Karachi, Islamabad, Dubai, London). Each lead has a contact, a `@example.com` email and a concrete pain point (e.g. "no online booking, patients call and hit voicemail"). *(Confirm the final list with B's `seed.py`.)*
+30 fictional B2B leads (from `agent/seed.py`, loaded automatically when the database is empty): **6 industries × 5 cities**, one company per industry per city. The industries are `dental clinic`, `gym`, `real-estate agency`, `restaurant`, `e-commerce store` and `SaaS startup`; the cities are Lahore, Karachi, Islamabad, Dubai and London. Each lead has a contact name and title, a website and email on `example.com` (never a real address), an employee count, and a concrete pain point the agent uses to personalise outreach.
 
-Example prompts: "Find 3 dental clinics in Lahore" · "Write a cold email to lead 1" · "Send it" → "yes" · "Add lead 3 to my pipeline and move it to meeting" · "Show my pipeline" · "Remember: I sell booking software for clinics".
+| Industry | Lead ids | Lahore | Karachi | Islamabad | Dubai | London |
+|---|---|---|---|---|---|---|
+| dental clinic | 1–5 | Canal Grove Dental | Harbour Finch Dental | Pine Court Dental | Dune Iris Dental | Brook Fern Dentistry |
+| gym | 6–10 | Brick Orchard Fitness | Tide Circuit Gym | Summit Lark Strength | Quartz Palm Gym | Cedar Lane Fitness |
+| real-estate agency | 11–15 | Maple Gate Realty | Saltwind Properties | Juniper Key Estates | Banyan Door Realty | Wren Yard Property |
+| restaurant | 16–20 | Saffron Kite Kitchen | Coal and Bay Table | Little Alder Cafe | Fig Lantern Dining | Copper Rain Bistro |
+| e-commerce store | 21–25 | Fable Loom Goods | Paper Reef Market | Fern Parcel Shop | Sand Glass Supply | Cotton Lark Studio |
+| SaaS startup | 26–30 | Clover Relay | Beacon Pelican | Mint Harbor Labs | Orchid Trail Cloud | Signal Thicket |
+
+Each user starts with an empty pipeline, no drafts and no memories.
+
+Example prompts: "Find gyms in Dubai" · "Find dental clinics in Lahore" · "Write a cold email to lead 1" · "Send it" → "yes" · "Add lead 9 to my pipeline and move it to meeting" · "Show my pipeline" · "Remember: I sell booking software for clinics" · (new conversation) "What do I sell?"
