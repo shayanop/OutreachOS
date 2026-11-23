@@ -4,6 +4,7 @@ from threading import Lock
 
 from dotenv import load_dotenv
 from langgraph.checkpoint.postgres import PostgresSaver
+from psycopg.conninfo import conninfo_to_dict, make_conninfo
 from psycopg.rows import dict_row
 from psycopg.types.json import Jsonb
 from psycopg_pool import ConnectionPool
@@ -22,6 +23,15 @@ class DatabaseUnavailable(RuntimeError):
     pass
 
 
+def _direct_neon_dsn(dsn: str) -> str:
+    host = conninfo_to_dict(dsn).get("host", "")
+    endpoint, dot, domain = host.partition(".")
+    if host.endswith(".neon.tech") and endpoint.endswith("-pooler"):
+        # The local pool owns connections. Neon uses the same credentials on its direct endpoint.
+        return make_conninfo(dsn, host=f"{endpoint.removesuffix('-pooler')}{dot}{domain}")
+    return dsn
+
+
 def init() -> None:
     global pool
     with _init_lock:
@@ -31,7 +41,7 @@ def init() -> None:
         if not dsn:
             raise DatabaseUnavailable("DATABASE_URL is required")
         candidate = ConnectionPool(
-            dsn,
+            _direct_neon_dsn(dsn),
             min_size=1,
             max_size=5,
             open=False,

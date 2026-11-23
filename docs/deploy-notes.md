@@ -17,7 +17,7 @@
 ## Neon
 
 - In the [Neon console](https://console.neon.tech/), create a Free project named `growthpilot`. Create `dev-a`, `dev-b`, and `dev-c` from a clean parent branch, before adding real credentials or test data. Use `main` for the deployment.
-- In each branch's **Connect** dialog, disable connection pooling, then copy the connection string for that branch with `sslmode=require`. Share development connection strings privately with the corresponding teammates.
+- In each branch's **Connect** dialog, disable connection pooling, then copy the connection string for that branch with `sslmode=require`. If Neon supplied a pooled hostname, the backend connects to the direct endpoint for the same database. Share development connection strings privately with the corresponding teammates.
 - Short-term history is in Postgres-backed LangGraph checkpoints. A's graph keys conversations by the pair of `user_id` and `thread_id`. The API rejects colons in `user_id` to keep the graph's separator unambiguous. Persistent facts, drafts and pipeline entries are scoped by `user_id` in Postgres.
 - `/chat` and the customer routes accept a caller-supplied demo ID without authentication. A caller who already knows another person's ID can impersonate it. Use synthetic data and opaque random demo IDs. A production customer deployment needs authentication and server-verified identity. The admin routes require `X-Admin-Token`; keep this value private.
 
