@@ -69,7 +69,8 @@ def run_turn(user_id: str, thread_id: str, message: str) -> dict:
         "configurable": {"thread_id": f"{user_id}:{thread_id}", "user_id": user_id, "turn_id": uuid4().hex},
         "recursion_limit": 12,
     }
-    out = graph.invoke({"messages": [HumanMessage(message)]}, config)
+    # durability="exit": one checkpoint write per turn instead of one per step (fewer DB round trips)
+    out = graph.invoke({"messages": [HumanMessage(message)]}, config, durability="exit")
     turn = out["messages"][_last_human(out["messages"]) + 1:]
     ais = [m for m in turn if isinstance(m, AIMessage)]
     return {
