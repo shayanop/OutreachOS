@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrowthPilot — AI Sales & Outreach Engine</title>
+  
+  <!-- Disciplined Typography: DM Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="top-bar">
+    <div class="brand-group">
+      <div class="brand-mark" aria-hidden="true">GP</div>
+      <span class="brand-name">GrowthPilot</span>
+    </div>
+    
+    <div class="nav-actions">
+      <div id="statusIndicator" class="status-indicator">
+        <span class="status-dot"></span>
+        <span id="statusText">Checking API…</span>
+      </div>
+      
+      <a href="admin.html" class="nav-link">
+        <span>Admin Dashboard</span>
+      </a>
+      
+      <div id="navUserSlot">
+        <!-- Rendered dynamically: Sign in button or User Session Badge -->
+      </div>
+    </div>
+  </header>
+
+  <!-- Cold Start / Server Wakeup Banner -->
+  <aside id="systemBanner" class="system-banner" role="status" aria-live="polite">
+    <span class="spinner-sm" aria-hidden="true"></span>
+    <span id="systemBannerText">Waking up the server… (free hosting sleeps when idle)</span>
+  </aside>
+
+  <!-- Marketing / Landing Section -->
+  <main>
+    <section class="landing-container">
+      <div class="hero">
+        <div class="hero-pill">Autonomous Outbound Engine</div>
+        <h1 class="hero-title">Your AI sales rep: find leads, write outreach, close deals.</h1>
+        <p class="hero-subtitle">Autonomous prospecting, hyper-personalized cold emails with human-in-the-loop approval, and live pipeline tracking.</p>
+        <div class="hero-cta-group">
+          <a href="#workspace" id="heroStartFreeBtn" class="btn btn-primary">Start free</a>
+          <a href="admin.html" class="btn btn-secondary">Executive Telemetry</a>
+        </div>
+      </div>
+
+      <!-- 3 Value Pillar Cards -->
+      <div class="pillars-grid">
+        <article class="pillar-card">
+          <div class="pillar-header">
+            <span class="pillar-index">01</span>
+            <h2 class="pillar-title">Find leads</h2>
+          </div>
+          <p class="pillar-desc">Targeted B2B discovery by niche, city, and headcount with verified decision-maker contacts.</p>
+        </article>
+
+        <article class="pillar-card">
+          <div class="pillar-header">
+            <span class="pillar-index">02</span>
+            <h2 class="pillar-title">Write outreach</h2>
+          </div>
+          <p class="pillar-desc">Context-aware cold emails tailored to company notes, gated by explicit send confirmation.</p>
+        </article>
+
+        <article class="pillar-card">
+          <div class="pillar-header">
+            <span class="pillar-index">03</span>
+            <h2 class="pillar-title">Track pipeline</h2>
+          </div>
+          <p class="pillar-desc">Automatic stage progression from initial discovery through reply, meeting, and closed-won.</p>
+        </article>
+      </div>
+
+      <!-- Pricing Section: SaaS Tiers -->
+      <section class="pricing-section">
+        <div class="section-head">
+          <h2>Predictable revenue pricing</h2>
+          <p>Scale autonomous outbound prospecting with transparent plan limits.</p>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Free Tier -->
+          <article class="pricing-card">
+            <h3 class="plan-name">Free</h3>
+            <div class="plan-price">
+              <span class="plan-amount tabular">$0</span>
+              <span class="plan-period">/mo</span>
+            </div>
+            <ul class="plan-features">
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> 20 messages / day</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Basic lead search</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Visual pipeline board</li>
+            </ul>
+            <a href="#workspace" class="btn btn-secondary pricing-cta-btn" data-plan="Free">Get started</a>
+          </article>
+
+          <!-- Starter Tier (Featured) -->
+          <article class="pricing-card featured">
+            <span class="popular-tag">Most Popular</span>
+            <h3 class="plan-name">Starter</h3>
+            <div class="plan-price">
+              <span class="plan-amount tabular">$19</span>
+              <span class="plan-period">/mo</span>
+            </div>
+            <ul class="plan-features">
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> 500 messages / day</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Long-term memory retention</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Unlimited outreach drafts</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Automated follow-up sequencing</li>
+            </ul>
+            <a href="#workspace" class="btn btn-primary pricing-cta-btn" data-plan="Starter">Start Starter</a>
+          </article>
+
+          <!-- Pro Tier -->
+          <article class="pricing-card">
+            <h3 class="plan-name">Pro</h3>
+            <div class="plan-price">
+              <span class="plan-amount tabular">$49</span>
+              <span class="plan-period">/mo</span>
+            </div>
+            <ul class="plan-features">
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Unlimited outreach volume</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Priority model routing</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Team pipeline CSV & API export</li>
+              <li class="plan-feature-item"><span class="check-icon" aria-hidden="true">✓</span> Multi-domain email deliverability</li>
+            </ul>
+            <a href="#workspace" class="btn btn-secondary pricing-cta-btn" data-plan="Pro">Go Pro</a>
+          </article>
+        </div>
+      </section>
+    </section>
+
+    <!-- Workspace Section -->
+    <section id="workspace" aria-label="Sales Workspace">
+      <!-- Sign-In Gate (shown when signed out) -->
+      <div id="signinView" class="signin-card-wrapper">
+        <div class="signin-card">
+          <div class="signin-header">
+            <h3>Launch Sales Workspace</h3>
+            <p>Access your autonomous AI sales pipeline and outreach drafts.</p>
+          </div>
+          <form id="signinForm" novalidate>
+            <div class="form-group">
+              <label for="signinName" class="form-label">Full Name</label>
+              <input type="text" id="signinName" class="form-input" placeholder="Sara Jenkins" required autocomplete="name">
+            </div>
+            <div class="form-group" style="margin-top: 12px;">
+              <label for="signinEmail" class="form-label">Work Email</label>
+              <input type="email" id="signinEmail" class="form-input" placeholder="sara@clinicflow.io" required autocomplete="email">
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">Launch Workspace</button>
+          </form>
+
+          <div class="divider-with-text">or</div>
+
+          <button type="button" id="demoAccountBtn" class="btn btn-secondary" style="width: 100%;">
+            Use Demo Account (Sara — Clinic Booking SaaS)
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Sales Workspace (shown when signed in) -->
+      <div id="workspaceView" style="display: none; flex-direction: column; flex-grow: 1;">
+        <!-- Workspace Header Subbar -->
+        <div class="workspace-header">
+          <div class="workspace-title-group">
+            <span class="workspace-title">Sales Engine</span>
+            <span class="workspace-subtitle" id="activeUserEmailDisplay"></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button type="button" id="workspaceSignoutBtn" class="btn btn-subtle btn-sm">Sign out</button>
+          </div>
+        </div>
+
+        <!-- Mobile View Navigation Switcher (< 900px) -->
+        <nav class="mobile-workspace-nav" id="mobileWorkspaceNav" aria-label="Mobile workspace sections">
+          <button type="button" class="mobile-nav-btn active" data-tab="chat">Agent Chat</button>
+          <button type="button" class="mobile-nav-btn" data-tab="pipeline">Pipeline & Drafts</button>
+          <button type="button" class="mobile-nav-btn" data-tab="threads">Threads</button>
+        </nav>
+
+        <!-- 3-Column Sales Workspace Grid -->
+        <div class="sales-workspace-grid">
+          
+          <!-- Column 1: Conversations (Left: 260px) -->
+          <aside class="col-threads" id="colThreads" aria-label="Conversation Threads">
+            <div class="col-header">
+              <span class="col-header-title">Conversations</span>
+              <button type="button" id="newThreadBtn" class="btn btn-primary btn-sm">+ New</button>
+            </div>
+            <div class="thread-list" id="threadList" role="list">
+              <!-- Rendered dynamically -->
+            </div>
+          </aside>
+
+          <!-- Column 2: Agent Chat (Center: minmax(0, 1fr)) -->
+          <section class="col-chat mobile-active" id="colChat" aria-label="Sales Agent Chat">
+            <div class="chat-feed" id="chatFeed" role="log" aria-live="polite">
+              <!-- Rendered dynamically -->
+            </div>
+
+            <!-- Composer Area -->
+            <div class="chat-composer-area">
+              <!-- Quick-Start Prompt Chips -->
+              <div class="prompt-chips-row" id="promptChipsRow" aria-label="Quick prompts">
+                <button type="button" class="prompt-chip" data-prompt="Find 5 gyms in Dubai">Find 5 gyms in Dubai</button>
+                <button type="button" class="prompt-chip" data-prompt="Write an email to lead #3">Write an email to lead #3</button>
+                <button type="button" class="prompt-chip" data-prompt="Show my pipeline">Show my pipeline</button>
+                <button type="button" class="prompt-chip" data-prompt="I sell booking software for clinics">I sell booking software for clinics</button>
+              </div>
+
+              <!-- Message Form -->
+              <form id="chatForm" class="composer-form">
+                <textarea 
+                  id="chatInput" 
+                  class="composer-textarea" 
+                  placeholder="Ask GrowthPilot to find leads, write emails, or update pipeline… (Enter to send, Shift+Enter for new line)" 
+                  rows="1"
+                  required
+                ></textarea>
+                <button type="submit" id="chatSubmitBtn" class="btn btn-primary btn-sm">Send</button>
+              </form>
+            </div>
+          </section>
+
+          <!-- Column 3: Live Pipeline & Outreach Drafts (Right: 380px) -->
+          <aside class="col-sidebar-right" id="colSidebarRight" aria-label="Pipeline and Drafts">
+            <!-- Section 1: Deal Pipeline -->
+            <section class="sidebar-section" aria-label="Deal Pipeline">
+              <div class="sidebar-section-header">
+                <span class="sidebar-section-title">
+                  <span aria-hidden="true">⊞</span> Live Pipeline
+                </span>
+                <button type="button" id="refreshPipelineBtn" class="btn btn-subtle btn-sm" title="Refresh Pipeline">↻</button>
+              </div>
+              <div class="kanban-scroll-container" id="kanbanBoard">
+                <!-- Rendered dynamically strictly in order: new, contacted, replied, meeting, won, lost -->
+              </div>
+            </section>
+
+            <!-- Section 2: Outreach Drafts -->
+            <section class="sidebar-section" aria-label="Outreach Drafts">
+              <div class="sidebar-section-header">
+                <span class="sidebar-section-title">
+                  <span aria-hidden="true">✉</span> Outreach Drafts
+                </span>
+                <button type="button" id="refreshDraftsBtn" class="btn btn-subtle btn-sm" title="Refresh Drafts">↻</button>
+              </div>
+              <div class="drafts-list-container" id="draftsList">
+                <!-- Rendered dynamically -->
+              </div>
+            </section>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Script Load Order: config.js MUST load before app.js -->
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

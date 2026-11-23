@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GrowthPilot — Executive Admin & Telemetry</title>
+  
+  <!-- Disciplined Typography: DM Sans + JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..700;1,9..40,400..700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="admin-body">
+
+  <!-- Admin Top Bar -->
+  <header class="admin-header">
+    <div class="brand-group">
+      <div class="brand-mark" aria-hidden="true">GP</div>
+      <span class="brand-name">GrowthPilot Admin</span>
+      <span class="status-indicator mock">
+        <span class="status-dot"></span>
+        <span id="adminStatusText">Telemetry Active</span>
+      </span>
+    </div>
+    
+    <div class="nav-actions">
+      <a href="index.html" class="nav-link">← Customer App</a>
+      <div id="adminAuthControls" style="display: none; align-items: center; gap: 8px;">
+        <span class="mono" style="font-size: 11px; color: var(--text-muted);" id="tokenPreviewDisplay"></span>
+        <button type="button" id="lockTokenBtn" class="btn btn-secondary btn-sm">Lock / Clear Token</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cold Start / Server Wakeup Banner -->
+  <aside id="systemBanner" class="system-banner" role="status" aria-live="polite">
+    <span class="spinner-sm" aria-hidden="true"></span>
+    <span id="systemBannerText">Waking up the server… (free hosting sleeps when idle)</span>
+  </aside>
+
+  <main>
+    <!-- Admin Token Gate (Shown when no token in localStorage) -->
+    <section id="adminGateView" class="admin-token-gate-container" aria-label="Admin Authentication">
+      <div class="signin-card">
+        <div class="signin-header">
+          <h3>Admin Token Authentication</h3>
+          <p>Restricted to executive operators and platform administrators.</p>
+        </div>
+        
+        <form id="adminTokenForm" novalidate>
+          <div class="form-group">
+            <label for="adminTokenInput" class="form-label">Admin Secret Token</label>
+            <input 
+              type="password" 
+              id="adminTokenInput" 
+              class="form-input mono" 
+              placeholder="e.g. admin-secret-key" 
+              required
+              autocomplete="current-password"
+            >
+          </div>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+            Hint: In Mock Mode, you can enter any token (e.g. <span class="mono">admin-secret-key</span>).
+          </p>
+          <div id="gateErrorText" style="display: none; color: #DC2626; font-size: 12px; margin-top: 8px;" role="alert"></div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 16px;">
+            Unlock Admin Telemetry
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Admin Content View (Shown when token is present) -->
+    <section id="adminContentView" class="admin-content-container" style="display: none;" aria-label="Executive Dashboard">
+      
+      <!-- Top Overview Bar: Live refresh indicator + manual refresh -->
+      <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h1 style="font-size: 20px; font-weight: 700; letter-spacing: -0.4px;">Executive Telemetry & Control</h1>
+          <p style="font-size: 12px; color: var(--text-secondary);">Real-time agent utilization, token economics, and pipeline distribution.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span style="font-size: 11px; color: var(--text-muted); font-family: var(--font-mono);">Auto-refreshing every 15s</span>
+          <button type="button" id="manualRefreshBtn" class="btn btn-secondary btn-sm">Refresh now</button>
+        </div>
+      </div>
+
+      <!-- Executive KPI Stat Tiles (GET /admin/stats) -->
+      <div class="stats-tiles-grid" id="statsTilesGrid">
+        <!-- Rendered dynamically:
+             1. Users
+             2. Leads
+             3. Emails Sent (sent / drafts)
+             4. Chats
+             5. Tokens (In / Out)
+             6. Est. Spend ($0.0000 formula)
+             7. Avg Latency (ms)
+        -->
+      </div>
+
+      <!-- Pipeline by Stage Breakdown Row -->
+      <section class="pipeline-breakdown-card" aria-label="Pipeline Stage Distribution">
+        <div class="breakdown-header">
+          <h2 class="breakdown-title">Pipeline Stage Distribution</h2>
+          <span id="pipelineTotalLeadsCount" class="count-pill mono" style="font-size: 11px; color: var(--text-muted);">0 leads</span>
+        </div>
+        
+        <!-- Pure CSS Progress Bar Row -->
+        <div class="breakdown-progress-bar" id="pipelineProgressBar">
+          <!-- Rendered dynamically -->
+        </div>
+
+        <!-- Legend -->
+        <div class="breakdown-legend" id="pipelineLegend">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+      <!-- Tabbed Data Explorer & Add Lead Card -->
+      <section class="data-explorer-card" aria-label="Telemetry Data Explorer">
+        <div class="explorer-toolbar">
+          <nav class="tab-nav" aria-label="Data tabs">
+            <button type="button" class="tab-btn active" data-tab="pipeline">Pipeline</button>
+            <button type="button" class="tab-btn" data-tab="outbox">Outbox</button>
+            <button type="button" class="tab-btn" data-tab="chats">Recent Chats</button>
+            <button type="button" class="tab-btn" data-tab="leads">Leads & Prospects</button>
+          </nav>
+          
+          <div id="tabActionSlot">
+            <!-- Dynamic button e.g. Toggle Add Lead Form when on leads tab -->
+          </div>
+        </div>
+
+        <!-- Collapsible Add Lead Form Box (Visible when on Leads tab or toggled) -->
+        <div id="addLeadBox" class="add-lead-box" style="display: none;">
+          <h3 style="font-size: 13px; font-weight: 600; margin-bottom: 12px;">Add Verified Prospect to Global Database</h3>
+          <form id="addLeadForm" novalidate>
+            <div class="lead-form-grid">
+              <div class="form-group">
+                <label for="leadCompany" class="form-label">Company Name *</label>
+                <input type="text" id="leadCompany" class="form-input" placeholder="e.g. Canal Grove Dental" required>
+              </div>
+              <div class="form-group">
+                <label for="leadIndustry" class="form-label">Industry *</label>
+                <input type="text" id="leadIndustry" class="form-input" placeholder="e.g. Healthcare" required>
+              </div>
+              <div class="form-group">
+                <label for="leadCity" class="form-label">City *</label>
+                <input type="text" id="leadCity" class="form-input" placeholder="e.g. Lahore" required>
+              </div>
+              <div class="form-group">
+                <label for="leadEmployees" class="form-label">Employees</label>
+                <input type="number" id="leadEmployees" class="form-input tabular" placeholder="18" min="0">
+              </div>
+              <div class="form-group">
+                <label for="leadWebsite" class="form-label">Website</label>
+                <input type="url" id="leadWebsite" class="form-input" placeholder="https://canalgrove.example.com">
+              </div>
+              <div class="form-group">
+                <label for="leadContactName" class="form-label">Contact Name</label>
+                <input type="text" id="leadContactName" class="form-input" placeholder="Sana Qureshi">
+              </div>
+              <div class="form-group">
+                <label for="leadContactTitle" class="form-label">Contact Title</label>
+                <input type="text" id="leadContactTitle" class="form-input" placeholder="Clinic Director">
+              </div>
+              <div class="form-group">
+                <label for="leadContactEmail" class="form-label">Contact Email</label>
+                <input type="email" id="leadContactEmail" class="form-input mono" placeholder="sana@canalgrove.example.com">
+              </div>
+            </div>
+            
+            <div class="form-group" style="margin-bottom: 12px;">
+              <label for="leadNotes" class="form-label">Prospect Notes & Pain Points</label>
+              <textarea id="leadNotes" class="form-input" rows="2" placeholder="Key bottlenecks, current software, expansion plans…"></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 8px;">
+              <button type="submit" id="addLeadSubmitBtn" class="btn btn-primary btn-sm">Save Lead (POST /admin/leads)</button>
+              <button type="button" id="cancelAddLeadBtn" class="btn btn-secondary btn-sm">Cancel</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Table Viewport -->
+        <div class="table-responsive">
+          <table class="data-table" id="adminDataTable">
+            <thead id="adminTableHead">
+              <!-- Rendered dynamically based on active tab -->
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Rendered dynamically based on active tab -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </section>
+  </main>
+
+  <!-- Script Load Order: config.js MUST load before admin.js -->
+  <script src="config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
