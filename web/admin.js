@@ -492,7 +492,7 @@
 
         tr.appendChild(createTd(row.user_id, 'mono'));
         tr.appendChild(createTd(String(row.lead_id), 'mono'));
-        tr.appendChild(createTd(row.company || '—'));
+        tr.appendChild(createTd(row.company || 'Not available'));
 
         // Stage badge
         const tdStage = document.createElement('td');
@@ -503,7 +503,7 @@
         tdStage.appendChild(badge);
         tr.appendChild(tdStage);
 
-        tr.appendChild(createTd(row.note || '—'));
+        tr.appendChild(createTd(row.note || 'Not available'));
 
         const tdTime = createTd(formatTimestamp(row.updated_at), 'mono');
         tr.appendChild(tdTime);
@@ -528,9 +528,9 @@
         const tr = document.createElement('tr');
 
         tr.appendChild(createTd(row.user_id, 'mono'));
-        tr.appendChild(createTd(row.company || '—'));
-        tr.appendChild(createTd(row.contact_email || '—', 'mono'));
-        tr.appendChild(createTd(row.subject || '—'));
+        tr.appendChild(createTd(row.company || 'Not available'));
+        tr.appendChild(createTd(row.contact_email || 'Not available', 'mono'));
+        tr.appendChild(createTd(row.subject || 'Not available'));
 
         // Truncated / Expandable body
         const tdBody = document.createElement('td');
@@ -592,7 +592,7 @@
           });
           tdTools.appendChild(toolWrap);
         } else {
-          tdTools.textContent = '—';
+          tdTools.textContent = 'None';
         }
         tr.appendChild(tdTools);
 
@@ -624,10 +624,10 @@
         const tr = document.createElement('tr');
 
         tr.appendChild(createTd(String(row.id || ''), 'mono'));
-        tr.appendChild(createTd(row.company || '—'));
-        tr.appendChild(createTd(row.industry || '—'));
-        tr.appendChild(createTd(row.city || '—'));
-        tr.appendChild(createTd(row.employees ? String(row.employees) : '—', 'tabular'));
+        tr.appendChild(createTd(row.company || 'Not available'));
+        tr.appendChild(createTd(row.industry || 'Not available'));
+        tr.appendChild(createTd(row.city || 'Not available'));
+        tr.appendChild(createTd(row.employees == null ? 'Not available' : String(row.employees), 'tabular'));
 
         // Website link or text
         const tdWeb = document.createElement('td');
@@ -640,14 +640,14 @@
           a.style.textDecoration = 'underline';
           tdWeb.appendChild(a);
         } else {
-          tdWeb.textContent = '—';
+          tdWeb.textContent = 'Not available';
         }
         tr.appendChild(tdWeb);
 
-        tr.appendChild(createTd(row.contact_name || '—'));
-        tr.appendChild(createTd(row.contact_title || '—'));
-        tr.appendChild(createTd(row.contact_email || '—', 'mono'));
-        tr.appendChild(createTd(row.notes || '—'));
+        tr.appendChild(createTd(row.contact_name || 'Not available'));
+        tr.appendChild(createTd(row.contact_title || 'Not available'));
+        tr.appendChild(createTd(row.contact_email || 'Not available', 'mono'));
+        tr.appendChild(createTd(row.notes || 'Not available'));
 
         adminTableBody.appendChild(tr);
       });
@@ -686,12 +686,12 @@
   function createTd(text, className = '') {
     const td = document.createElement('td');
     if (className) td.className = className;
-    td.textContent = text !== null && text !== undefined ? text : '—';
+    td.textContent = text !== null && text !== undefined ? text : 'Not available';
     return td;
   }
 
   function formatTimestamp(isoStr) {
-    if (!isoStr) return '—';
+    if (!isoStr) return 'Not available';
     try {
       const d = new Date(isoStr);
       return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) + ' ' +

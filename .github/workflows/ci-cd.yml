@@ -1,0 +1,123 @@
+name: OutreachOS CI/CD
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PROD_API_URL: https://growthpilot-api-7ppc.onrender.com
+  PROD_WEB_URL: https://outreachos-web-indol.vercel.app
+
+jobs:
+  frontend:
+    name: Frontend tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - run: node --test tests/test_frontend.mjs
+
+  backend:
+    name: Backend and Postgres integration tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      TEST_DATABASE_URL: postgresql://outreachos:outreachos@127.0.0.1:5432/outreachos_test
+    services:
+      postgres:
+        image: postgres:16.9-alpine
+        env:
+          POSTGRES_USER: outreachos
+          POSTGRES_PASSWORD: outreachos
+          POSTGRES_DB: outreachos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U outreachos -d outreachos_test"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=12
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: agent/requirements.txt
+      - run: python -m pip install -r agent/requirements.txt
+      - run: python -m pip check
+      - run: python -m unittest discover -s tests -p 'test_backend.py' -v
+      - name: Build the production Docker image
+        run: docker build --tag outreachos-backend:ci agent
+
+  production:
+    name: Deploy and verify production
+    if: github.ref == 'refs/heads/Main' && github.event_name != 'pull_request'
+    needs: [frontend, backend]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    environment:
+      name: production
+      url: https://outreachos-web-indol.vercel.app
+    concurrency:
+      group: outreachos-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Ensure this is the latest Main commit
+        run: |
+          latest=$(git ls-remote origin refs/heads/Main | cut -f1)
+          if [ "$latest" != "$GITHUB_SHA" ]; then
+            echo "::error::A newer commit is on Main. Release it instead of deploying stale code."
+            exit 1
+          fi
+      - name: Validate deployment configuration
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          missing=0
+          for name in RENDER_DEPLOY_HOOK_URL VERCEL_TOKEN VERCEL_ORG_ID VERCEL_PROJECT_ID; do
+            if [ -z "${!name}" ]; then
+              echo "::error::${name} is missing from the production environment."
+              missing=1
+            fi
+          done
+          exit "$missing"
+      - name: Package the static frontend
+        run: |
+          output="$RUNNER_TEMP/outreachos-release/.vercel/output"
+          mkdir -p "$output/static"
+          git archive "$GITHUB_SHA" web | tar --extract --strip-components=1 --directory="$output/static"
+          printf '%s\n' '{"version":3,"routes":[{"src":"/","dest":"/index.html"},{"src":"/admin","dest":"/admin.html"},{"handle":"filesystem"}]}' > "$output/config.json"
+          printf '{"revision":"%s"}\n' "$GITHUB_SHA" > "$output/static/release.json"
+      - name: Install the pinned Vercel CLI
+        run: npm install --global vercel@66.6.0
+      - name: Deploy the tested backend revision to Render
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: node scripts/deploy-check.mjs trigger-render
+      - name: Verify the backend and its Neon connection
+        run: node scripts/deploy-check.mjs backend
+      - name: Deploy the tested frontend to the existing Vercel project
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID }}
+        run: |
+          cd "$RUNNER_TEMP/outreachos-release"
+          vercel deploy --prebuilt --prod --yes --token "$VERCEL_TOKEN"
+      - name: Verify public pages and their API wiring
+        run: node scripts/deploy-check.mjs frontend

@@ -10,3 +10,4 @@ web/mock/
 node_modules/
 *.pyc
 agent/__pycache__/
+.vercel/

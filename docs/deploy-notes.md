@@ -25,7 +25,7 @@ The seed directory contains 30 fictional businesses with reserved `example.com` 
 
 ## Render
 
-1. Create a [Render Blueprint](https://render.com/docs/infrastructure-as-code) from the GitHub repository's `Main` branch once the backend and agent are merged. The Blueprint defines a Free Docker web service with build root `agent` and health check `/health`.
+1. For a new service, create a [Render Blueprint](https://render.com/docs/infrastructure-as-code) from `Main`. The Blueprint defines a Free Docker web service with build root `agent` and health check `/health`. For the existing workshop deployment, use [the CI/CD runbook](ci-cd.md).
 2. Enter the group's `ANTHROPIC_API_KEY` and the production Neon `DATABASE_URL` in Render's secret settings. Render generates the `ADMIN_TOKEN`. Use that token only in the admin sign-in form.
 3. Verify that `GET /health` returns `ok` and that `POST /chat` returns the required JSON with a real lead lookup. Follow the runbook for the evaluation window: Render Free spins down after 15 minutes without traffic. Configure a temporary external monitor to request `GET /health` every 10 minutes through Wednesday, 25 November 2026 (Asia/Karachi), and then disable it.
 4. Send the API base URL to A and C. For Vercel, C can import the GitHub repository, use Root Directory `web` and Framework Preset `Other`, and set the Render base URL in `web/config.js`.

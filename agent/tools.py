@@ -52,7 +52,9 @@ def save_draft(lead_id: int, subject: str, body: str, config: RunnableConfig) ->
         return f"ERROR: no lead with id {lead_id}"
     if not subject.strip() or not body.strip():
         return "ERROR: subject and body are required"
-    d = db.save_draft(user_id, int(lead_id), subject.strip(), body.strip())
+    subject = subject.strip().replace(chr(8212), "-")
+    body = body.strip().replace(chr(8212), "-")
+    d = db.save_draft(user_id, int(lead_id), subject, body)
     return f"Draft saved with id {d['id']}. It is NOT sent."
 
 

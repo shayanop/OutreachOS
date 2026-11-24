@@ -6,7 +6,7 @@ from secrets import compare_digest
 from time import perf_counter
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Query
+from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Query, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, PlainTextResponse
 from pydantic import BaseModel, Field, StringConstraints
@@ -109,7 +109,10 @@ def run_agent(body: ChatIn) -> ChatOut:
 
 
 @app.get("/health", response_class=PlainTextResponse)
-def health() -> str:
+def health(response: Response) -> str:
+    revision = os.getenv("RENDER_GIT_COMMIT")
+    if revision:
+        response.headers["X-OutreachOS-Revision"] = revision
     return "ok"
 
 

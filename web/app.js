@@ -369,7 +369,7 @@
 
       navUserSlot.appendChild(badge);
       if (activeUserEmailDisplay) {
-        activeUserEmailDisplay.textContent = '— ' + currentUser.email;
+        activeUserEmailDisplay.textContent = currentUser.email;
       }
     } else {
       const signinBtn = document.createElement('a');

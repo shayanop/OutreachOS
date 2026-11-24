@@ -59,9 +59,11 @@ graph = builder.compile(checkpointer=db.checkpointer())
 
 
 def _text(msg: AIMessage) -> str:
-    if isinstance(msg.content, str):
-        return msg.content
-    return "".join(b.get("text", "") for b in msg.content if isinstance(b, dict) and b.get("type") == "text")
+    content = msg.content
+    if not isinstance(content, str):
+        content = "".join(block.get("text", "") for block in content
+                          if isinstance(block, dict) and block.get("type") == "text")
+    return content.replace(chr(8212), "-")
 
 
 def run_turn(user_id: str, thread_id: str, message: str) -> dict:
