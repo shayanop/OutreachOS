@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: growthpilot-api
+    runtime: docker
+    plan: free
+    rootDir: agent
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: MODEL
+        value: claude-haiku-5-5
