@@ -11,6 +11,15 @@
         ],
         "createdAt": "2026-11-23T11:35:30.409Z",
         "reason": "Claude: false positive - .status-dot (web/style.css) is a static 6px circle with no animation; the only pulse keyframe is the chat typing indicator in index.html"
+      },
+      {
+        "rule": "pulsing-dot",
+        "value": "*",
+        "files": [
+          "web/index.html"
+        ],
+        "createdAt": "2026-11-24T08:34:41.691Z",
+        "reason": "Claude triage: .status-dot in web/index.html is static (no animation); the only pulse animation is .typing-dot, shown while a chat reply is in flight, so it reflects real live state"
       }
     ]
   }

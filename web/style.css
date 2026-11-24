@@ -278,6 +278,10 @@ input, textarea, select {
   background-color: var(--accent);
 }
 
+.status-indicator.down .status-dot {
+  background-color: var(--stage-lost-text);
+}
+
 .nav-link {
   font-size: 13px;
   font-weight: 500;

@@ -1081,12 +1081,19 @@
       statusText.textContent = 'Mock Mode';
       return;
     }
-    statusIndicator.classList.remove('mock');
+    statusIndicator.classList.remove('mock', 'down');
     statusText.textContent = 'Checking API…';
     fetch((window.API_BASE || '') + '/health')
       .then(r => r.text())
-      .then(t => { statusText.textContent = t.trim() === 'ok' ? 'API Ready' : 'API Error'; })
-      .catch(() => { statusText.textContent = 'API Offline'; });
+      .then(t => {
+        const ok = t.trim() === 'ok';
+        statusText.textContent = ok ? 'API Ready' : 'API Error';
+        statusIndicator.classList.toggle('down', !ok);
+      })
+      .catch(() => {
+        statusText.textContent = 'API Offline';
+        statusIndicator.classList.add('down');
+      });
   }
 
   // Initialize
